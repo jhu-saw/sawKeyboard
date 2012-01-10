@@ -30,7 +30,7 @@ if (cisst_FOUND_AS_REQUIRED)
                ../sawKeyboardExport.h
                mtsKeyboard.cpp
                ../mtsKeyboard.h)
-
+  set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
   # create/configure file for find_package (sawKeyboard)
