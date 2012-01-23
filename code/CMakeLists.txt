@@ -42,6 +42,15 @@ if (cisst_FOUND_AS_REQUIRED)
                   "${sawComponents_BINARY_DIR}/sawKeyboardConfig.cmake"
                    @ONLY@)
 
+  # Install target for headers and library
+  install (FILES ../mtsKeyboard.h ../sawKeyboardExport.h
+           DESTINATION include)
+
+  install (TARGETS sawKeyboard
+           RUNTIME DESTINATION bin
+           LIBRARY DESTINATION lib
+           ARCHIVE DESTINATION lib)
+
 else (cisst_FOUND_AS_REQUIRED)
   message ("Information: code in ${CMAKE_CURRENT_SOURCE_DIR} will not be compiled, it requires ${REQUIRED_CISST_LIBRARIES}")
 endif (cisst_FOUND_AS_REQUIRED)
