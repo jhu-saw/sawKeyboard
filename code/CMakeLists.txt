@@ -51,6 +51,9 @@ if (cisst_FOUND_AS_REQUIRED)
            LIBRARY DESTINATION lib
            ARCHIVE DESTINATION lib)
 
+  install( FILES "${sawComponents_BINARY_DIR}/sawKeyboardConfig.cmake"
+    DESTINATION ${CISST_CMAKE_MODULES_INSTALL_SUFFIX}/components)
+
 else (cisst_FOUND_AS_REQUIRED)
   message ("Information: code in ${CMAKE_CURRENT_SOURCE_DIR} will not be compiled, it requires ${REQUIRED_CISST_LIBRARIES}")
 endif (cisst_FOUND_AS_REQUIRED)
