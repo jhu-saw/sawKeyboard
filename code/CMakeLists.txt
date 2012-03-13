@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# (C) Copyright 2011 Johns Hopkins University (JHU), All Rights
+# (C) Copyright 2011-2012 Johns Hopkins University (JHU), All Rights
 # Reserved.
 #
 # --- begin cisst license - do not edit ---
@@ -26,33 +26,37 @@ if (cisst_FOUND_AS_REQUIRED)
   # load cisst configuration
   include (${CISST_USE_FILE})
 
-  add_library (sawKeyboard
-               ../sawKeyboardExport.h
-               mtsKeyboard.cpp
-               ../mtsKeyboard.h)
-  set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
-  cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
-
   # create/configure file for find_package (sawKeyboard)
-  set (sawKeyboard_INCLUDE_DIR "${sawComponents_SOURCE_DIR}")
+  set (sawKeyboard_INCLUDE_DIR "${sawKeyboard_SOURCE_DIR}/include")
   set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
+  include_directories (${sawKeyboard_INCLUDE_DIR})
+  set (sawKeyboard_HEADER_DIR "${sawKeyboard_INCLUDE_DIR}/sawKeyboard")
+  add_library (sawKeyboard
+               mtsKeyboard.cpp
+               ${sawKeyboard_HEADER_DIR}/sawKeyboardExport.h
+               ${sawKeyboard_HEADER_DIR}/mtsKeyboard.h)
+  set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
+  cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
+
   configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sawKeyboardConfig.cmake.in"
-                  "${sawComponents_BINARY_DIR}/sawKeyboardConfig.cmake"
+                  "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
                    @ONLY@)
 
   # Install target for headers and library
-  install (FILES ../mtsKeyboard.h ../sawKeyboardExport.h
-           DESTINATION include)
+  install (DIRECTORY
+           ${sawKeyboard_INCLUDE_DIR}/sawKeyboard
+           DESTINATION include
+           PATTERN .svn EXCLUDE)
 
   install (TARGETS sawKeyboard
            RUNTIME DESTINATION bin
            LIBRARY DESTINATION lib
            ARCHIVE DESTINATION lib)
 
-  install( FILES "${sawComponents_BINARY_DIR}/sawKeyboardConfig.cmake"
-    DESTINATION ${CISST_CMAKE_MODULES_INSTALL_SUFFIX}/components)
+  install (FILES "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
+           DESTINATION "${CISST_CMAKE_INSTALL_SUFFIX}/saw")
 
 else (cisst_FOUND_AS_REQUIRED)
   message ("Information: code in ${CMAKE_CURRENT_SOURCE_DIR} will not be compiled, it requires ${REQUIRED_CISST_LIBRARIES}")

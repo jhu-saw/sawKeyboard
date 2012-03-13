@@ -12,4 +12,5 @@
 #
 # --- end cisst license ---
 
+project (sawKeyboard)
 add_subdirectory (code)
