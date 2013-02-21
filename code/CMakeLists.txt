@@ -16,7 +16,8 @@
 set (REQUIRED_CISST_LIBRARIES cisstCommon
                               cisstVector
                               cisstOSAbstraction
-                              cisstMultiTask)
+                              cisstMultiTask
+                              cisstParameterTypes)
 
 find_package (cisst REQUIRED ${REQUIRED_CISST_LIBRARIES})
 
