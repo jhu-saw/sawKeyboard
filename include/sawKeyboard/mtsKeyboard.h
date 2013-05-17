@@ -100,6 +100,8 @@ class CISST_EXPORT mtsKeyboard: public mtsTaskContinuous {
     typedef std::multimap<char, KeyData *> KeyDataType;
     KeyDataType KeyboardDataMap;
 
+    mtsFunctionWrite KeyEvent;
+
     char QuitKey;
     char KeyboardInput; // temp
     CMN_DECLARE_MEMBER_AND_ACCESSORS(bool, Done);

@@ -30,9 +30,14 @@ http://www.cisst.org/cisst/license.txt.
 CMN_IMPLEMENT_SERVICES(mtsKeyboard);
 
 mtsKeyboard::mtsKeyboard(void):
-    mtsTaskContinuous("keyboard")
+    mtsTaskContinuous("keyboard"),
+    QuitKey('q')
 {
     DoneMember = false;
+    mtsInterfaceProvided * interfaceProvided = this->AddInterfaceProvided("Keyboard");
+    if (interfaceProvided) {
+        interfaceProvided->AddEventWrite(KeyEvent, "Key", 'c');
+    }
 }
 
 
@@ -61,7 +66,7 @@ void mtsKeyboard::AddKeyVoidEvent(char key, const std::string & interfaceName, c
 {
     // create new key data and add to list
     KeyData * keyData = new KeyData;
-    KeyboardDataMap.insert(std::make_pair(key, keyData));  
+    KeyboardDataMap.insert(std::make_pair(key, keyData));
 
     // set key action
     keyData->Type = VOID_EVENT;
@@ -120,13 +125,24 @@ void mtsKeyboard::SetQuitKey(char quitKey)
 }
 
 
-void mtsKeyboard::Run(void) 
+void mtsKeyboard::Run(void)
 {
+    // make sure we don't hang or wait for a key press when we are done
+    if (Done()) {
+        this->Thread.Sleep(10.0 * cmn_ms);
+        return;
+    }
+
+    // get a key using the blocking cmnGetChar
     KeyboardInput = cmnGetChar();
     if (KeyboardInput == QuitKey) {
         DoneMember = true;
     }
 
+    // emit general event through default provided interface
+    KeyEvent(KeyboardInput);
+
+    // see if there is any other event or command to trigger
     if (!this->Done()) {
         prmEventButton event;
         KeyData * keyData;
@@ -134,43 +150,42 @@ void mtsKeyboard::Run(void)
         const KeyDataType::iterator end = this->KeyboardDataMap.end();
         for (iterator = this->KeyboardDataMap.begin();
              iterator != end;
-             iterator++)
-            {
-                if (iterator->first == KeyboardInput) {
-                    keyData = iterator->second;
-                    switch (keyData->Type) {
-                    case BUTTON_EVENT:
-                        if (keyData->Toggle == true) {
-                            if (keyData->State == true) {
-                                event.SetType(prmEventButton::RELEASED);
-                                keyData->State = false;
-                            } else {
-                                event.SetType(prmEventButton::PRESSED);
-                                keyData->State = true;
-                            }
-                        } else {
+             iterator++) {
+            if (iterator->first == KeyboardInput) {
+                keyData = iterator->second;
+                switch (keyData->Type) {
+                case BUTTON_EVENT:
+                    if (keyData->Toggle == true) {
+                        if (keyData->State == true) {
                             event.SetType(prmEventButton::RELEASED);
+                            keyData->State = false;
+                        } else {
+                            event.SetType(prmEventButton::PRESSED);
                             keyData->State = true;
                         }
-                        keyData->WriteTrigger(event);
-                        CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " sending button event " << event << std::endl;
-                        break;
-                    case VOID_EVENT:
-                        keyData->VoidTrigger();
-                        CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " sending void event " << std::endl;
-                        break;
-                    case VOID_FUNCTION:
-                        keyData->VoidTrigger();
-                        CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " calling void function " << std::endl;
-                        break;
-                    case WRITE_FUNCTION:
-                        mtsBool value = keyData->State;
-                        keyData->WriteTrigger(value);
-                        keyData->State = !(keyData->State);
-                        CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " calling write command " << value << std::endl;
-                        break;
+                    } else {
+                        event.SetType(prmEventButton::RELEASED);
+                        keyData->State = true;
                     }
+                    keyData->WriteTrigger(event);
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " sending button event " << event << std::endl;
+                    break;
+                case VOID_EVENT:
+                    keyData->VoidTrigger();
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " sending void event " << std::endl;
+                    break;
+                case VOID_FUNCTION:
+                    keyData->VoidTrigger();
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " calling void function " << std::endl;
+                    break;
+                case WRITE_FUNCTION:
+                    mtsBool value = keyData->State;
+                    keyData->WriteTrigger(value);
+                    keyData->State = !(keyData->State);
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << KeyboardInput << " calling write command " << value << std::endl;
+                    break;
                 }
             }
+        }
     }
 }
