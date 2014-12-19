@@ -1,7 +1,5 @@
 #
-#
-# (C) Copyright 2011-2012 Johns Hopkins University (JHU), All Rights
-# Reserved.
+# (C) Copyright 2011-2014 Johns Hopkins University (JHU), All Rights Reserved.
 #
 # --- begin cisst license - do not edit ---
 #
@@ -11,6 +9,7 @@
 #
 # --- end cisst license ---
 
+
 # Core library
 set (REQUIRED_CISST_LIBRARIES cisstCommon
                               cisstVector
@@ -18,7 +17,7 @@ set (REQUIRED_CISST_LIBRARIES cisstCommon
                               cisstMultiTask
                               cisstParameterTypes)
 
-find_package (cisst REQUIRED ${REQUIRED_CISST_LIBRARIES})
+find_package (cisst 1.0.1 COMPONENTS ${REQUIRED_CISST_LIBRARIES})
 
 if (cisst_FOUND_AS_REQUIRED)
 
@@ -26,26 +25,44 @@ if (cisst_FOUND_AS_REQUIRED)
   include (${CISST_USE_FILE})
 
   # create/configure file for find_package (sawKeyboard)
-  set (sawKeyboard_INCLUDE_DIR "${sawKeyboard_SOURCE_DIR}/include")
+  set (sawKeyboard_INCLUDE_DIR "${sawKeyboard_SOURCE_DIR}/include"
+                               "${sawKeyboard_BINARY_DIR}/include")
   set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
+  # Set the version number
+  set (sawKeyboard_VERSION_MAJOR "1")
+  set (sawKeyboard_VERSION_MINOR "0")
+  set (sawKeyboard_VERSION_PATCH "1")
+  set (sawKeyboard_VERSION "${sawKeyboard_VERSION_MAJOR}.${sawKeyboard_VERSION_MINOR}.${sawKeyboard_VERSION_PATCH}")
+
+  # Generate sawKeyboardRevision.h
+  configure_file ("${sawKeyboard_SOURCE_DIR}/code/sawKeyboardRevision.h.in"
+                  "${sawKeyboard_BINARY_DIR}/include/sawKeyboard/sawKeyboardRevision.h")
+
   include_directories (${sawKeyboard_INCLUDE_DIR})
-  set (sawKeyboard_HEADER_DIR "${sawKeyboard_INCLUDE_DIR}/sawKeyboard")
+  set (sawKeyboard_HEADER_DIR "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard")
   add_library (sawKeyboard
                mtsKeyboard.cpp
                ${sawKeyboard_HEADER_DIR}/sawKeyboardExport.h
-               ${sawKeyboard_HEADER_DIR}/mtsKeyboard.h)
+               ${sawKeyboard_HEADER_DIR}/mtsKeyboard.h
+               ${sawKeyboard_BINARY_DIR}/include/sawKeyboard/sawKeyboardRevision.h)
+
   set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
   configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sawKeyboardConfig.cmake.in"
                   "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
-                   @ONLY@)
+                  @ONLY@)
+
+  include (CMakePackageConfigHelpers)
+  write_basic_package_version_file ("${sawKeyboard_BINARY_DIR}/sawKeyboardConfigVersion.cmake"
+                                    VERSION ${sawKeyboard_VERSION}
+                                    COMPATIBILITY SameMajorVersion)
 
   # Install target for headers and library
-  install (DIRECTORY
-           ${sawKeyboard_INCLUDE_DIR}/sawKeyboard
+  install (DIRECTORY "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard"
+                     "${sawKeyboard_BINARY_DIR}/include/sawKeyboard"
            DESTINATION include
            PATTERN .svn EXCLUDE)
 
@@ -55,6 +72,7 @@ if (cisst_FOUND_AS_REQUIRED)
            ARCHIVE DESTINATION lib)
 
   install (FILES "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
+                 "${sawKeyboard_BINARY_DIR}/sawKeyboardConfigVersion.cmake"
            DESTINATION "${CISST_CMAKE_INSTALL_SUFFIX}/saw")
 
 else (cisst_FOUND_AS_REQUIRED)
