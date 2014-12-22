@@ -55,10 +55,10 @@ if (cisst_FOUND_AS_REQUIRED)
                   "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
                   @ONLY@)
 
-  include (CMakePackageConfigHelpers)
-  write_basic_package_version_file ("${sawKeyboard_BINARY_DIR}/sawKeyboardConfigVersion.cmake"
-                                    VERSION ${sawKeyboard_VERSION}
-                                    COMPATIBILITY SameMajorVersion)
+  cisst_add_config_version ("${sawKeyboard_BINARY_DIR}/sawKeyboardConfigVersion.cmake"
+                            VERSION ${sawKeyboard_VERSION}
+                            DESTINATION ${CISST_CMAKE_INSTALL_SUFFIX}/saw
+                            COMPONENT sawKeyboard)
 
   # Install target for headers and library
   install (DIRECTORY "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard"
@@ -72,7 +72,6 @@ if (cisst_FOUND_AS_REQUIRED)
            ARCHIVE DESTINATION lib)
 
   install (FILES "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
-                 "${sawKeyboard_BINARY_DIR}/sawKeyboardConfigVersion.cmake"
            DESTINATION "${CISST_CMAKE_INSTALL_SUFFIX}/saw")
 
 else (cisst_FOUND_AS_REQUIRED)
