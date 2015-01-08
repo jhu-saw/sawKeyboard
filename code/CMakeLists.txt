@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2011-2014 Johns Hopkins University (JHU), All Rights Reserved.
+# (C) Copyright 2011-2015 Johns Hopkins University (JHU), All Rights Reserved.
 #
 # --- begin cisst license - do not edit ---
 #
@@ -27,7 +27,12 @@ if (cisst_FOUND_AS_REQUIRED)
   # create/configure file for find_package (sawKeyboard)
   set (sawKeyboard_INCLUDE_DIR "${sawKeyboard_SOURCE_DIR}/include"
                                "${sawKeyboard_BINARY_DIR}/include")
-  set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
+  if (DEFINED LIBRARY_OUTPUT_PATH)
+    set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
+  else ()
+    set (sawKeyboard_LIBRARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+  endif ()
+
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
   # Set the version number
@@ -51,11 +56,18 @@ if (cisst_FOUND_AS_REQUIRED)
   set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
+  cisst_is_catkin_build (sawKeyboard_IS_CATKIN_BUILT)
+  if (sawKeyboard_IS_CATKIN_BUILT)
+    set (sawKeyboard_CONFIG_FILE_DIR "${CATKIN_DEVEL_PREFIX}/cmake")
+  else ()
+    set (sawKeyboard_CONFIG_FILE_DIR "${sawKeyboard_BINARY_DIR}")
+  endif ()
+
   configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sawKeyboardConfig.cmake.in"
-                  "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
+                  "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake"
                   @ONLY@)
 
-  cisst_add_config_version ("${sawKeyboard_BINARY_DIR}/sawKeyboardConfigVersion.cmake"
+  cisst_add_config_version ("${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfigVersion.cmake"
                             VERSION ${sawKeyboard_VERSION}
                             DESTINATION ${CISST_CMAKE_INSTALL_SUFFIX}/saw
                             COMPONENT sawKeyboard)
