@@ -24,15 +24,15 @@ if (cisst_FOUND_AS_REQUIRED)
   # load cisst configuration
   include (${CISST_USE_FILE})
 
+  # where to save the libraries
+  if (NOT DEFINED LIBRARY_OUTPUT_PATH)
+    set (LIBRARY_OUTPUT_PATH "${sawKeyboard_BINARY_DIR}/lib")
+  endif ()
+
   # create/configure file for find_package (sawKeyboard)
   set (sawKeyboard_INCLUDE_DIR "${sawKeyboard_SOURCE_DIR}/include"
                                "${sawKeyboard_BINARY_DIR}/include")
-  if (DEFINED LIBRARY_OUTPUT_PATH)
-    set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
-  else ()
-    set (sawKeyboard_LIBRARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-  endif ()
-
+  set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
   # Set the version number
