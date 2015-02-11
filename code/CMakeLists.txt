@@ -24,9 +24,13 @@ if (cisst_FOUND_AS_REQUIRED)
   # load cisst configuration
   include (${CISST_USE_FILE})
 
-  # where to save the libraries
-  if (NOT DEFINED LIBRARY_OUTPUT_PATH)
+  # catkin/ROS paths
+  cisst_is_catkin_build (sawKeyboard_IS_CATKIN_BUILT)
+  if (sawKeyboard_IS_CATKIN_BUILT)
+    set (sawKeyboard_CONFIG_FILE_DIR "${CATKIN_DEVEL_PREFIX}/cmake")
     set (LIBRARY_OUTPUT_PATH "${sawKeyboard_BINARY_DIR}/lib")
+  else ()
+    set (sawKeyboard_CONFIG_FILE_DIR "${sawKeyboard_BINARY_DIR}")
   endif ()
 
   # create/configure file for find_package (sawKeyboard)
@@ -56,12 +60,6 @@ if (cisst_FOUND_AS_REQUIRED)
   set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
-  cisst_is_catkin_build (sawKeyboard_IS_CATKIN_BUILT)
-  if (sawKeyboard_IS_CATKIN_BUILT)
-    set (sawKeyboard_CONFIG_FILE_DIR "${CATKIN_DEVEL_PREFIX}/cmake")
-  else ()
-    set (sawKeyboard_CONFIG_FILE_DIR "${sawKeyboard_BINARY_DIR}")
-  endif ()
 
   configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sawKeyboardConfig.cmake.in"
                   "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake"
