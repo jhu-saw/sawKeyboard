@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2011-2015 Johns Hopkins University (JHU), All Rights Reserved.
+# (C) Copyright 2011-2016 Johns Hopkins University (JHU), All Rights Reserved.
 #
 # --- begin cisst license - do not edit ---
 #
@@ -63,11 +63,11 @@ if (cisst_FOUND_AS_REQUIRED)
 
   configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sawKeyboardConfig.cmake.in"
                   "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake"
-                  @ONLY@)
+                  @ONLY)
 
   cisst_add_config_version ("${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfigVersion.cmake"
                             VERSION ${sawKeyboard_VERSION}
-                            DESTINATION ${CISST_CMAKE_INSTALL_SUFFIX}/saw
+                            DESTINATION "share/sawKeyboard"
                             COMPONENT sawKeyboard)
 
   # Install target for headers and library
@@ -81,8 +81,8 @@ if (cisst_FOUND_AS_REQUIRED)
            LIBRARY DESTINATION lib
            ARCHIVE DESTINATION lib)
 
-  install (FILES "${sawKeyboard_BINARY_DIR}/sawKeyboardConfig.cmake"
-           DESTINATION "${CISST_CMAKE_INSTALL_SUFFIX}/saw")
+  install (FILES "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake"
+           DESTINATION "share/sawKeyboard")
 
 else (cisst_FOUND_AS_REQUIRED)
   message ("Information: code in ${CMAKE_CURRENT_SOURCE_DIR} will not be compiled, it requires ${REQUIRED_CISST_LIBRARIES}")
