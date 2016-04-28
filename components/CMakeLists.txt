@@ -9,8 +9,11 @@
 #
 # --- end cisst license ---
 
+project (sawKeyboard)
 
-# Core library
+cmake_minimum_required (VERSION 2.8)
+
+# Core libraries
 set (REQUIRED_CISST_LIBRARIES cisstCommon
                               cisstVector
                               cisstOSAbstraction
@@ -27,15 +30,16 @@ if (cisst_FOUND_AS_REQUIRED)
   # catkin/ROS paths
   cisst_is_catkin_build (sawKeyboard_IS_CATKIN_BUILT)
   if (sawKeyboard_IS_CATKIN_BUILT)
-    set (sawKeyboard_CONFIG_FILE_DIR "${CATKIN_DEVEL_PREFIX}/cmake")
+    set (sawKeyboard_CONFIG_FILE_DIR "${CATKIN_DEVEL_PREFIX}/share/sawKeyboard/cmake")
     set (LIBRARY_OUTPUT_PATH "${sawKeyboard_BINARY_DIR}/lib")
   else ()
     set (sawKeyboard_CONFIG_FILE_DIR "${sawKeyboard_BINARY_DIR}")
   endif ()
 
   # create/configure file for find_package (sawKeyboard)
-  set (sawKeyboard_INCLUDE_DIR "${sawKeyboard_SOURCE_DIR}/include"
-                               "${sawKeyboard_BINARY_DIR}/include")
+  set (sawKeyboard_INCLUDE_DIR
+       "${sawKeyboard_SOURCE_DIR}/include"
+       "${sawKeyboard_BINARY_DIR}/include")
   set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
@@ -52,7 +56,7 @@ if (cisst_FOUND_AS_REQUIRED)
   include_directories (${sawKeyboard_INCLUDE_DIR})
   set (sawKeyboard_HEADER_DIR "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard")
   add_library (sawKeyboard
-               mtsKeyboard.cpp
+               code/mtsKeyboard.cpp
                ${sawKeyboard_HEADER_DIR}/sawKeyboardExport.h
                ${sawKeyboard_HEADER_DIR}/mtsKeyboard.h
                ${sawKeyboard_BINARY_DIR}/include/sawKeyboard/sawKeyboardRevision.h)
@@ -60,9 +64,10 @@ if (cisst_FOUND_AS_REQUIRED)
   set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
-
-  configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sawKeyboardConfig.cmake.in"
-                  "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake"
+  set (sawKeyboard_CMAKE_CONFIG_FILE
+       "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake")
+  configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/cmake/sawKeyboardConfig.cmake.in"
+                  "${sawKeyboard_CMAKE_CONFIG_FILE}"
                   @ONLY)
 
   cisst_add_config_version ("${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfigVersion.cmake"
@@ -81,7 +86,7 @@ if (cisst_FOUND_AS_REQUIRED)
            LIBRARY DESTINATION lib
            ARCHIVE DESTINATION lib)
 
-  install (FILES "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake"
+  install (FILES "${sawKeyboard_CMAKE_CONFIG_FILE}"
            DESTINATION "share/sawKeyboard")
 
 else (cisst_FOUND_AS_REQUIRED)
