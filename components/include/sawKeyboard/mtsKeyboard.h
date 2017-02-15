@@ -5,7 +5,7 @@
   Author(s):  Gorkem Sevinc, Anton Deguet
   Created on: 2009-09-17
 
-  (C) Copyright 2009-2014 Johns Hopkins University (JHU), All Rights Reserved.
+  (C) Copyright 2009-2017 Johns Hopkins University (JHU), All Rights Reserved.
 
 --- begin cisst license - do not edit ---
 
@@ -15,7 +15,6 @@ http://www.cisst.org/cisst/license.txt.
 
 --- end cisst license ---
 */
-
 
 #ifndef _mtsKeyboard_h
 #define _mtsKeyboard_h
@@ -37,11 +36,19 @@ http://www.cisst.org/cisst/license.txt.
   key has been pressed using if (keyboard.Done()). */
 class CISST_EXPORT mtsKeyboard: public mtsTaskContinuous {
     // declare services, requires dynamic creation
-    CMN_DECLARE_SERVICES(CMN_NO_DYNAMIC_CREATION, CMN_LOG_ALLOW_DEFAULT);
+    CMN_DECLARE_SERVICES(CMN_DYNAMIC_CREATION_ONEARG, CMN_LOG_ALLOW_DEFAULT);
  public:
-    mtsKeyboard(void);
-    ~mtsKeyboard(void) {};
-    void Configure(const std::string & CMN_UNUSED(filename) = "") {};
+    inline mtsKeyboard(const std::string & componentName = "keyboard"):
+        mtsTaskContinuous(componentName, 256) {
+        Init();
+    }
+
+    inline mtsKeyboard(const mtsTaskContinuousConstructorArg & arg):
+        mtsTaskContinuous(arg) {
+        Init();
+    }
+
+    void Configure(const std::string & filename = "");
     void Startup(void){};
     void Run(void);
     void Cleanup(void) {};
@@ -95,18 +102,22 @@ class CISST_EXPORT mtsKeyboard: public mtsTaskContinuous {
     };
 
  protected:
+
+    /*! Code called by all constructors. */
+    void Init(void);
+
     typedef std::multimap<char, KeyData *> KeyDataType;
-    KeyDataType KeyboardDataMap;
+    KeyDataType mKeyboardDataMap;
 
-    mtsFunctionWrite KeyEvent;
+    mtsInterfaceProvided * mInterface;
+    mtsFunctionWrite mKeyEvent;
 
-    char QuitKey;
-    char KeyboardInput; // temp
+    char mQuitKey;
+    char mKeyboardInput; // temp
     CMN_DECLARE_MEMBER_AND_ACCESSORS(bool, Done);
 };
 
 
 CMN_DECLARE_SERVICES_INSTANTIATION(mtsKeyboard);
-
 
 #endif // _mtsKeyboard_h
