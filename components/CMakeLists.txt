@@ -30,8 +30,9 @@ if (cisst_FOUND_AS_REQUIRED)
   # catkin/ROS paths
   cisst_is_catkin_build (sawKeyboard_IS_CATKIN_BUILT)
   if (sawKeyboard_IS_CATKIN_BUILT)
-    set (sawKeyboard_CONFIG_FILE_DIR "${CATKIN_DEVEL_PREFIX}/share/sawKeyboard/cmake")
-    set (LIBRARY_OUTPUT_PATH "${sawKeyboard_BINARY_DIR}/lib")
+    set (sawKeyboard_CONFIG_FILE_DIR
+         "${CATKIN_DEVEL_PREFIX}/share/sawKeyboard/cmake")
+    set (LIBRARY_OUTPUT_PATH "${CATKIN_DEVEL_PREFIX}/lib")
   else ()
     set (sawKeyboard_CONFIG_FILE_DIR "${sawKeyboard_BINARY_DIR}")
   endif ()
