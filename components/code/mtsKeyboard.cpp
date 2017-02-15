@@ -23,6 +23,12 @@ http://www.cisst.org/cisst/license.txt.
 #include <cisstMultiTask/mtsInterfaceProvided.h>
 #include <cisstParameterTypes/prmEventButton.h>
 
+#include <cisstConfig.h>
+
+#if CISST_HAS_JSON
+#include <json/json.h>
+#endif // CISST_HAS_JSON
+
 CMN_IMPLEMENT_SERVICES_DERIVED_ONEARG(mtsKeyboard, mtsTaskContinuous, mtsTaskContinuousConstructorArg);
 
 void mtsKeyboard::Init(void)
@@ -38,7 +44,105 @@ void mtsKeyboard::Init(void)
 
 void mtsKeyboard::Configure(const std::string & filename)
 {
+#if CISST_HAS_JSON
+    std::ifstream jsonStream;
+    jsonStream.open(filename.c_str());
 
+    Json::Value jsonConfig, jsonValue;
+    Json::Reader jsonReader;
+    if (!jsonReader.parse(jsonStream, jsonConfig)) {
+        CMN_LOG_CLASS_INIT_ERROR << "Configure: failed to parse configuration" << std::endl
+                                 << "File: " << filename << std::endl << "Error(s):" << std::endl
+                                 << jsonReader.getFormattedErrorMessages();
+        return;
+    }
+
+    // search for array of keys
+    const Json::Value keys = jsonConfig["keys"];
+    if (keys.size() == 0) {
+        CMN_LOG_CLASS_INIT_ERROR << "Configure: configuration files needs \"keys\"" << std::endl;
+        return;
+    }
+    for (unsigned int index = 0; index < keys.size(); ++index) {
+        Json::Value key = keys[index];
+        std::string character, interfaceType, interfaceName, eventName;
+        // key is required
+        jsonValue = key["key"];
+        if (!jsonValue.empty()) {
+            character = jsonValue.asString();
+            if (character.size() != 1) {
+                CMN_LOG_CLASS_INIT_ERROR << "Configure: \"key\" for keys["
+                                         << index << "] should be a single character, found \""
+                                         << character << "\"" << std::endl;
+                return;
+            }
+        } else {
+            CMN_LOG_CLASS_INIT_ERROR << "Configure: can't find \"key\" for keys["
+                                     << index << "]" << std::endl;
+            return;
+        }
+        // interface-name
+        jsonValue = key["interface-name"];
+        if (!jsonValue.empty()) {
+            interfaceName = jsonValue.asString();
+        } else {
+            CMN_LOG_CLASS_INIT_ERROR << "Configure: can't find \"interface-name\" for keys["
+                                     << index << "]" << std::endl;
+            return;
+        }
+        // interface-type
+        jsonValue = key["interface-type"];
+        if (!jsonValue.empty()) {
+            interfaceType = jsonValue.asString();
+            if (!((interfaceType == "void-event")
+                  || (interfaceType == "void-function")
+                  || (interfaceType == "write-function")
+                  || (interfaceType == "button-event"))) {
+                CMN_LOG_CLASS_INIT_ERROR << "Configure: \"interface-type\" for keys["
+                                         << index
+                                         << "] must be one of \"void-event\", \"void-function\","
+                                         << "\"write-function\" or \"button-event\", found: "
+                                         << interfaceType << std::endl;
+                return;
+            }
+        } else {
+            CMN_LOG_CLASS_INIT_ERROR << "Configure: can't find \"interface-type\" for keys["
+                                     << index << "]" << std::endl;
+            return;
+        }
+        // create interface based on type
+        if (interfaceType == "button-event") {
+            jsonValue = key["toggle"];
+            if (!jsonValue.empty()) {
+                bool toggle = jsonValue.asBool();
+                AddKeyButtonEvent(character[0], interfaceName, toggle);
+            } else {
+                CMN_LOG_CLASS_INIT_ERROR << "Configure: can't find \"toggle\" for keys["
+                                         << index << "]" << std::endl;
+                return;
+            }
+        } else {
+            // this will require a name
+            jsonValue = key["name"];
+            if (!jsonValue.empty()) {
+                std::string name = jsonValue.asString();
+                if (interfaceType == "void-event") {
+                    AddKeyVoidEvent(character[0], interfaceName, name);
+                } else if (interfaceType == "void-function") {
+                    AddKeyVoidFunction(character[0], interfaceName, name);
+                } else if (interfaceType == "write-function") {
+                    AddKeyWriteFunction(character[0], interfaceName, name, false);
+                }
+            } else {
+                CMN_LOG_CLASS_INIT_ERROR << "Configure: can't find \"name\" for keys["
+                                         << index << "]" << std::endl;
+                return;
+            }
+        }
+    }
+#else
+    CMN_LOG_CLASS_INIT_ERROR << "Configure: this method requires CISST_HAS_JSON, reconfigure cisst with CISST_HAS_JSON" << std::endl;
+#endif
 }
 
 void mtsKeyboard::AddKeyButtonEvent(char key, const std::string & interfaceName, bool toggle)
