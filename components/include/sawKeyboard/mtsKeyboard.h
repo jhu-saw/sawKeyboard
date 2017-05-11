@@ -19,6 +19,7 @@ http://www.cisst.org/cisst/license.txt.
 #ifndef _mtsKeyboard_h
 #define _mtsKeyboard_h
 
+#include <cisstCommon/cmnGetChar.h>
 #include <cisstMultiTask/mtsForwardDeclarations.h>
 #include <cisstMultiTask/mtsTaskContinuous.h>
 #include <sawKeyboard/sawKeyboardRevision.h>
@@ -49,9 +50,13 @@ class CISST_EXPORT mtsKeyboard: public mtsTaskContinuous {
     }
 
     void Configure(const std::string & filename = "");
-    void Startup(void){};
+    inline void Startup(void) {
+        mGetCharEnvironment.Activate();
+    };
     void Run(void);
-    void Cleanup(void) {};
+    inline void Cleanup(void) {
+        mGetCharEnvironment.DeActivate();
+    };
 
     enum TriggerType {BUTTON_EVENT, VOID_EVENT, VOID_FUNCTION, WRITE_FUNCTION};
 
@@ -112,8 +117,8 @@ class CISST_EXPORT mtsKeyboard: public mtsTaskContinuous {
     mtsInterfaceProvided * mInterface;
     mtsFunctionWrite mKeyEvent;
 
+    cmnGetCharEnvironment mGetCharEnvironment;
     char mQuitKey;
-    char mKeyboardInput; // temp
     CMN_DECLARE_MEMBER_AND_ACCESSORS(bool, Done);
 };
 

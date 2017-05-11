@@ -18,7 +18,6 @@ http://www.cisst.org/cisst/license.txt.
 
 
 #include <sawKeyboard/mtsKeyboard.h>
-#include <cisstCommon/cmnGetChar.h>
 #include <cisstMultiTask/mtsInterfaceRequired.h>
 #include <cisstMultiTask/mtsInterfaceProvided.h>
 #include <cisstParameterTypes/prmEventButton.h>
@@ -233,13 +232,13 @@ void mtsKeyboard::Run(void)
     }
 
     // get a key using the blocking cmnGetChar
-    mKeyboardInput = cmnGetChar();
-    if (mKeyboardInput == mQuitKey) {
+    const int keyboardInput = mGetCharEnvironment.GetChar();
+    if (keyboardInput == mQuitKey) {
         DoneMember = true;
     }
 
     // emit general event through default provided interface
-    mKeyEvent(mKeyboardInput);
+    mKeyEvent(keyboardInput);
 
     // see if there is any other event or command to trigger
     if (!this->Done()) {
@@ -250,7 +249,7 @@ void mtsKeyboard::Run(void)
         for (iterator = mKeyboardDataMap.begin();
              iterator != end;
              iterator++) {
-            if (iterator->first == mKeyboardInput) {
+            if (iterator->first == keyboardInput) {
                 keyData = iterator->second;
                 switch (keyData->Type) {
                 case BUTTON_EVENT:
@@ -267,21 +266,21 @@ void mtsKeyboard::Run(void)
                         keyData->State = true;
                     }
                     keyData->WriteTrigger(event);
-                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << mKeyboardInput << " sending button event " << event << std::endl;
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << keyboardInput << " sending button event " << event << std::endl;
                     break;
                 case VOID_EVENT:
                     keyData->VoidTrigger();
-                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << mKeyboardInput << " sending void event " << std::endl;
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << keyboardInput << " sending void event " << std::endl;
                     break;
                 case VOID_FUNCTION:
                     keyData->VoidTrigger();
-                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << mKeyboardInput << " calling void function " << std::endl;
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << keyboardInput << " calling void function " << std::endl;
                     break;
                 case WRITE_FUNCTION:
                     mtsBool value = keyData->State;
                     keyData->WriteTrigger(value);
                     keyData->State = !(keyData->State);
-                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << mKeyboardInput << " calling write command " << value << std::endl;
+                    CMN_LOG_CLASS_RUN_DEBUG << "Run " << keyboardInput << " calling write command " << value << std::endl;
                     break;
                 }
             }
