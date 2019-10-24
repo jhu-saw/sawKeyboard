@@ -18,6 +18,7 @@ http://www.cisst.org/cisst/license.txt.
 
 
 #include <sawKeyboard/mtsKeyboard.h>
+#include <cisstCommon/cmnUnits.h>
 #include <cisstMultiTask/mtsInterfaceRequired.h>
 #include <cisstMultiTask/mtsInterfaceProvided.h>
 #include <cisstParameterTypes/prmEventButton.h>
