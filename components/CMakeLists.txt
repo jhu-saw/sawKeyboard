@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2011-2016 Johns Hopkins University (JHU), All Rights Reserved.
+# (C) Copyright 2011-2021 Johns Hopkins University (JHU), All Rights Reserved.
 #
 # --- begin cisst license - do not edit ---
 #
@@ -20,7 +20,7 @@ set (REQUIRED_CISST_LIBRARIES cisstCommon
                               cisstMultiTask
                               cisstParameterTypes)
 
-find_package (cisst 1.0.9 COMPONENTS ${REQUIRED_CISST_LIBRARIES})
+find_package (cisst 1.1.0 COMPONENTS ${REQUIRED_CISST_LIBRARIES})
 
 if (cisst_FOUND_AS_REQUIRED)
 
@@ -46,7 +46,7 @@ if (cisst_FOUND_AS_REQUIRED)
 
   # Set the version number
   set (sawKeyboard_VERSION_MAJOR "1")
-  set (sawKeyboard_VERSION_MINOR "2")
+  set (sawKeyboard_VERSION_MINOR "3")
   set (sawKeyboard_VERSION_PATCH "0")
   set (sawKeyboard_VERSION "${sawKeyboard_VERSION_MAJOR}.${sawKeyboard_VERSION_MINOR}.${sawKeyboard_VERSION_PATCH}")
 
