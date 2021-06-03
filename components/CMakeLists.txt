@@ -9,9 +9,8 @@
 #
 # --- end cisst license ---
 
-project (sawKeyboard)
-
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.10)
+project (sawKeyboard VERSION 1.3.0)
 
 # Core libraries
 set (REQUIRED_CISST_LIBRARIES cisstCommon
@@ -44,12 +43,6 @@ if (cisst_FOUND_AS_REQUIRED)
   set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
-  # Set the version number
-  set (sawKeyboard_VERSION_MAJOR "1")
-  set (sawKeyboard_VERSION_MINOR "3")
-  set (sawKeyboard_VERSION_PATCH "0")
-  set (sawKeyboard_VERSION "${sawKeyboard_VERSION_MAJOR}.${sawKeyboard_VERSION_MINOR}.${sawKeyboard_VERSION_PATCH}")
-
   # Generate sawKeyboardRevision.h
   configure_file ("${sawKeyboard_SOURCE_DIR}/code/sawKeyboardRevision.h.in"
                   "${sawKeyboard_BINARY_DIR}/include/sawKeyboard/sawKeyboardRevision.h")
@@ -62,7 +55,10 @@ if (cisst_FOUND_AS_REQUIRED)
                ${sawKeyboard_HEADER_DIR}/mtsKeyboard.h
                ${sawKeyboard_BINARY_DIR}/include/sawKeyboard/sawKeyboardRevision.h)
 
-  set_property (TARGET sawKeyboard PROPERTY FOLDER "sawKeyboard")
+  set_target_properties (sawKeyboard PROPERTIES
+                         VERSION ${sawKeyboard_VERSION}
+                         FOLDER "sawKeyboard")
+
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
   set (sawKeyboard_CMAKE_CONFIG_FILE
@@ -80,15 +76,17 @@ if (cisst_FOUND_AS_REQUIRED)
   install (DIRECTORY "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard"
                      "${sawKeyboard_BINARY_DIR}/include/sawKeyboard"
            DESTINATION include
+           COMPONENT sawKeyboard
            PATTERN .svn EXCLUDE)
 
   install (TARGETS sawKeyboard
-           RUNTIME DESTINATION bin
-           LIBRARY DESTINATION lib
-           ARCHIVE DESTINATION lib)
+           RUNTIME DESTINATION bin COMPONENT sawKeyboard
+           LIBRARY DESTINATION lib COMPONENT sawKeyboard
+           ARCHIVE DESTINATION lib COMPONENT sawKeyboard)
 
   install (FILES "${sawKeyboard_CMAKE_CONFIG_FILE}"
-           DESTINATION "share/sawKeyboard")
+           DESTINATION "share/sawKeyboard"
+           COMPONENT sawKeyboard)
 
 else (cisst_FOUND_AS_REQUIRED)
   message ("Information: code in ${CMAKE_CURRENT_SOURCE_DIR} will not be compiled, it requires ${REQUIRED_CISST_LIBRARIES}")
