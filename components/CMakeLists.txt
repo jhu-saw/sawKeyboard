@@ -76,13 +76,13 @@ if (cisst_FOUND_AS_REQUIRED)
   install (DIRECTORY "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard"
                      "${sawKeyboard_BINARY_DIR}/include/sawKeyboard"
            DESTINATION include
-           COMPONENT sawKeyboard
+           COMPONENT sawKeyboard-dev
            PATTERN .svn EXCLUDE)
 
-  install (TARGETS sawKeyboard
-           RUNTIME DESTINATION bin COMPONENT sawKeyboard
-           LIBRARY DESTINATION lib COMPONENT sawKeyboard
-           ARCHIVE DESTINATION lib COMPONENT sawKeyboard)
+  install (TARGETS sawKeyboard COMPONENT sawKeyboard
+           RUNTIME DESTINATION bin
+           LIBRARY DESTINATION lib
+           ARCHIVE DESTINATION lib)
 
   install (FILES "${sawKeyboard_CMAKE_CONFIG_FILE}"
            DESTINATION "share/sawKeyboard"
