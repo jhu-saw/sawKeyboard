@@ -57,6 +57,7 @@ if (cisst_FOUND_AS_REQUIRED)
 
   set_target_properties (sawKeyboard PROPERTIES
                          VERSION ${sawKeyboard_VERSION}
+                         COMPONENT sawKeyboard
                          FOLDER "sawKeyboard")
 
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
