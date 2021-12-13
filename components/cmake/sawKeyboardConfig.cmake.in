@@ -26,12 +26,13 @@ if ("${sawKeyboard_CMAKE_CONFIG_FILE}" STREQUAL "${THIS_FILE_PATH}")
   set (sawKeyboard_LIBRARY_DIR "@sawKeyboard_LIBRARY_DIR@")
 else ()
   # try to find the install dir, we know the install is using
-  # share/sawKeyboard so we can go ../..
-  set (RELATIVE_INSTALL_DIR "${THIS_FILE_PATH}/../..")
-  get_filename_component (ABSOLUTE_INSTALL_DIR "${RELATIVE_INSTALL_DIR}" ABSOLUTE)
-  # set directories using the install dir
-  set (sawKeyboard_INCLUDE_DIR "${ABSOLUTE_INSTALL_DIR}/include")
-  set (sawKeyboard_LIBRARY_DIR "${ABSOLUTE_INSTALL_DIR}/lib")
+  # share/sawKeyboard so we can go ../.. or ../../..
+  # find include path first
+  find_path (sawKeyboard_INCLUDE_DIR
+    NAMES sawKeyboard/sawKeyboardExport.h
+    HINTS ${THIS_FILE_PATH}/../.. ${THIS_FILE_PATH}/../../..)
+  # set library path relative to include
+  set (sawKeyboard_LIBRARY_DIR "${sawKeyboard_INCLUDE_DIR}/../lib")
 endif ()
 
 set (sawKeyboard_LIBRARIES   "@sawKeyboard_LIBRARIES@")
