@@ -27,14 +27,7 @@ if (cisst_FOUND_AS_REQUIRED)
   include (${CISST_USE_FILE})
 
   # catkin/ROS paths
-  cisst_is_catkin_build (sawKeyboard_IS_CATKIN_BUILT)
-  if (sawKeyboard_IS_CATKIN_BUILT)
-    set (sawKeyboard_CONFIG_FILE_DIR
-         "${CATKIN_DEVEL_PREFIX}/share/sawKeyboard/cmake")
-    set (LIBRARY_OUTPUT_PATH "${CATKIN_DEVEL_PREFIX}/lib")
-  else ()
-    set (sawKeyboard_CONFIG_FILE_DIR "${sawKeyboard_BINARY_DIR}")
-  endif ()
+  cisst_set_output_path ()
 
   # create/configure file for find_package (sawKeyboard)
   set (sawKeyboard_INCLUDE_DIR
@@ -43,9 +36,8 @@ if (cisst_FOUND_AS_REQUIRED)
   set (sawKeyboard_LIBRARY_DIR "${LIBRARY_OUTPUT_PATH}")
   set (sawKeyboard_LIBRARIES sawKeyboard)
 
-  # Generate sawKeyboardRevision.h
-  configure_file ("${sawKeyboard_SOURCE_DIR}/code/sawKeyboardRevision.h.in"
-                  "${sawKeyboard_BINARY_DIR}/include/sawKeyboard/sawKeyboardRevision.h")
+  # add all config files for this component
+  cisst_add_config_files (sawKeyboard)
 
   include_directories (${sawKeyboard_INCLUDE_DIR})
   set (sawKeyboard_HEADER_DIR "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard")
@@ -62,17 +54,6 @@ if (cisst_FOUND_AS_REQUIRED)
 
   cisst_target_link_libraries (sawKeyboard ${REQUIRED_CISST_LIBRARIES})
 
-  set (sawKeyboard_CMAKE_CONFIG_FILE
-       "${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfig.cmake")
-  configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/cmake/sawKeyboardConfig.cmake.in"
-                  "${sawKeyboard_CMAKE_CONFIG_FILE}"
-                  @ONLY)
-
-  cisst_add_config_version ("${sawKeyboard_CONFIG_FILE_DIR}/sawKeyboardConfigVersion.cmake"
-                            VERSION ${sawKeyboard_VERSION}
-                            DESTINATION "share/sawKeyboard"
-                            COMPONENT sawKeyboard)
-
   # Install target for headers and library
   install (DIRECTORY "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard"
                      "${sawKeyboard_BINARY_DIR}/include/sawKeyboard"
@@ -84,10 +65,6 @@ if (cisst_FOUND_AS_REQUIRED)
            RUNTIME DESTINATION bin
            LIBRARY DESTINATION lib
            ARCHIVE DESTINATION lib)
-
-  install (FILES "${sawKeyboard_CMAKE_CONFIG_FILE}"
-           DESTINATION "share/sawKeyboard"
-           COMPONENT sawKeyboard)
 
 else (cisst_FOUND_AS_REQUIRED)
   message ("Information: code in ${CMAKE_CURRENT_SOURCE_DIR} will not be compiled, it requires ${REQUIRED_CISST_LIBRARIES}")
