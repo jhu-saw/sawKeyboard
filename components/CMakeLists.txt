@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2011-2021 Johns Hopkins University (JHU), All Rights Reserved.
+# (C) Copyright 2011-2023 Johns Hopkins University (JHU), All Rights Reserved.
 #
 # --- begin cisst license - do not edit ---
 #
@@ -39,7 +39,7 @@ if (cisst_FOUND_AS_REQUIRED)
   # add all config files for this component
   cisst_add_config_files (sawKeyboard)
 
-  include_directories (${sawKeyboard_INCLUDE_DIR})
+  include_directories (BEFORE ${sawKeyboard_INCLUDE_DIR})
   set (sawKeyboard_HEADER_DIR "${sawKeyboard_SOURCE_DIR}/include/sawKeyboard")
   add_library (sawKeyboard
                code/mtsKeyboard.cpp
