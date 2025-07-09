@@ -9,7 +9,7 @@
 #
 # --- end cisst license ---
 
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 3.16)
 project (sawKeyboard VERSION 1.4.0)
 
 # Core libraries
