@@ -239,7 +239,7 @@ void mtsKeyboard::Run(void)
     }
 
     // emit general event through default provided interface
-    mKeyEvent(keyboardInput);
+    mKeyEvent(static_cast<char>(keyboardInput));
 
     // see if there is any other event or command to trigger
     if (!this->Done()) {
