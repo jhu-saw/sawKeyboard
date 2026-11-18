@@ -18,9 +18,13 @@ http://www.cisst.org/cisst/license.txt.
 
 
 #include <sawKeyboard/mtsKeyboard.h>
+
+#include <chrono>
+
 #include <cisstCommon/cmnUnits.h>
 #include <cisstMultiTask/mtsInterfaceRequired.h>
 #include <cisstMultiTask/mtsInterfaceProvided.h>
+#include <cisstOSAbstraction/osaSleep.h>
 #include <cisstParameterTypes/prmEventButton.h>
 
 #include <cisstConfig.h>
@@ -28,6 +32,8 @@ http://www.cisst.org/cisst/license.txt.
 #if CISST_HAS_JSON
 #include <json/json.h>
 #endif // CISST_HAS_JSON
+
+using namespace std::chrono_literals;
 
 CMN_IMPLEMENT_SERVICES_DERIVED_ONEARG(mtsKeyboard, mtsTaskContinuous, mtsTaskContinuousConstructorArg);
 
@@ -228,7 +234,7 @@ void mtsKeyboard::Run(void)
 {
     // make sure we don't hang or wait for a key press when we are done
     if (Done()) {
-        this->Thread.Sleep(10.0 * cmn_ms);
+        osaSleep(10ms);
         return;
     }
 
